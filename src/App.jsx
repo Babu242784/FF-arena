@@ -183,7 +183,7 @@ export default function App() {
     const matchTime = new Date(matchTimeStr).getTime();
     const now = new Date().getTime();
     const diffMins = (matchTime - now) / (1000 * 60);
-    return diffMins <= 15 && diffMins >= -60; // Visible 15 mins before till 1hr after
+    return diffMins <= 15 && diffMins >= -60;
   };
 
   return (
@@ -192,7 +192,7 @@ export default function App() {
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 20px', backgroundColor: '#151821', borderBottom: '1px solid #232734' }}>
         <div>
           <h2 style={{ color: '#ff3b30', margin: 0, fontSize: '20px', fontWeight: '900', letterSpacing: '1px' }}>🔥 FF ARENA</h2>
-          {profile && <small style={{ color: '#888' }}>Reg ID: <strong style={{ color: '#ff9500' }}>{profile.registration_id}</strong></strong></small>}
+          {profile && <small style={{ color: '#888' }}>Reg ID: <strong style={{ color: '#ff9500' }}>{profile.registration_id}</strong></small>}
         </div>
         {session && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -407,4 +407,6 @@ export default function App() {
                   {config.paymentInstructions}
                 </div>
                 <p style={{ fontSize: '13px', margin: '0 0 10px 0' }}>Entry Fee: <strong>₹{selectedTourney.entry_fee}</strong></p>
-    
+                <input
+                  type="text"
+ 

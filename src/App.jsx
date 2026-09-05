@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
-import { Trophy, Wallet, Shield, Award, Key, Bell } from 'lucide-react';
 
 export default function App() {
   const [session, setSession] = useState(null);
@@ -210,7 +209,6 @@ export default function App() {
 
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 bg-slate-800/80 border border-amber-500/30 px-3 py-1 rounded-full">
-            <Wallet className="w-3.5 h-3.5 text-amber-400" />
             <span className="text-xs font-bold text-amber-300">₹{profile?.wallet_balance || '0.00'}</span>
           </div>
           <button onClick={() => supabase.auth.signOut()} className="text-[10px] bg-slate-800 hover:bg-red-500/20 hover:text-red-400 text-slate-400 px-2 py-1 rounded border border-slate-700">
@@ -223,7 +221,7 @@ export default function App() {
         {activeTab === 'tournaments' && (
           <div className="space-y-4">
             <h2 className="text-sm font-bold tracking-wider uppercase text-slate-400 flex items-center gap-2">
-              <Trophy className="w-4 h-4 text-amber-400" /> Live & Upcoming Matches
+              🏆 Live & Upcoming Matches
             </h2>
 
             {tournaments.length === 0 ? (
@@ -261,7 +259,7 @@ export default function App() {
                       {userReg?.status === 'approved' && (
                         <div className="mt-3 p-3 rounded-lg border border-amber-500/30 bg-amber-500/5 space-y-1">
                           <div className="flex items-center justify-between text-xs font-bold text-amber-400">
-                            <span className="flex items-center gap-1"><Key className="w-3.5 h-3.5" /> Room Credentials</span>
+                            <span>🔑 Room Credentials</span>
                             {!roomReady && <span className="text-[10px] text-slate-400 font-normal">Unlocks 15m before match</span>}
                           </div>
                           {roomReady ? (
@@ -300,7 +298,7 @@ export default function App() {
         {activeTab === 'history' && (
           <div className="space-y-4">
             <h2 className="text-sm font-bold tracking-wider uppercase text-slate-400 flex items-center gap-2">
-              <Award className="w-4 h-4 text-amber-400" /> Private Match History
+              🎖️ Private Match History
             </h2>
 
             {registrations.length === 0 ? (
@@ -353,19 +351,19 @@ export default function App() {
 
       <nav className="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur border-t border-slate-800 py-2 px-6 flex justify-around items-center z-50">
         <button onClick={() => setActiveTab('tournaments')} className={`flex flex-col items-center gap-1 ${activeTab === 'tournaments' ? 'text-amber-400' : 'text-slate-500'}`}>
-          <Trophy className="w-5 h-5" />
+          <span className="text-base">🏆</span>
           <span className="text-[10px] font-bold">Matches</span>
         </button>
         <button onClick={() => setActiveTab('history')} className={`flex flex-col items-center gap-1 ${activeTab === 'history' ? 'text-amber-400' : 'text-slate-500'}`}>
-          <Award className="w-5 h-5" />
+          <span className="text-base">🎖️</span>
           <span className="text-[10px] font-bold">History</span>
         </button>
         <button onClick={() => setActiveTab('wallet')} className={`flex flex-col items-center gap-1 ${activeTab === 'wallet' ? 'text-amber-400' : 'text-slate-500'}`}>
-          <Wallet className="w-5 h-5" />
+          <span className="text-base">👛</span>
           <span className="text-[10px] font-bold">Wallet</span>
         </button>
       </nav>
     </div>
   );
     }
-        
+          

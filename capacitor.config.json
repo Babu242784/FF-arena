@@ -1,6 +1,11 @@
 {
-  "appId": "com.ffarena.app",
-  "appName": "FF Arena",
+  "appId": "com.example.app",
+  "appName": "FF-arena",
   "webDir": "dist",
-  "bundledWebRuntime": false
+  "server": {
+    "androidScheme": "https",
+    "allowNavigation": [
+      "*.supabase.co"
+    ]
+  }
 }

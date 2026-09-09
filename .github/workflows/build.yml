@@ -38,24 +38,20 @@ jobs:
           npx --yes @capacitor/cli add android || true
           npx --yes @capacitor/cli sync android
 
-      - name: Inject Network Permissions & Fix Kotlin
+      - name: Inject Permissions & Exclude Duplicate Kotlin Dependencies
         run: |
           MANIFEST_PATH="android/app/src/main/AndroidManifest.xml"
           if [ -f "$MANIFEST_PATH" ]; then
-            # Clean duplicate permissions if any
             sed -i '/android.permission.INTERNET/d' $MANIFEST_PATH
             sed -i '/android.permission.ACCESS_NETWORK_STATE/d' $MANIFEST_PATH
-            
-            # Inject permissions cleanly
             sed -i '/<application/i \    <uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />' $MANIFEST_PATH
             sed -i 's/<application/<application android:usesCleartextTraffic="true"/' $MANIFEST_PATH
           fi
-          
-          # Fix Kotlin Duplicate Classes
-          GRADLE_PROPS="android/gradle.properties"
-          if [ -f "$GRADLE_PROPS" ]; then
-            echo "android.enableJetifier=true" >> $GRADLE_PROPS
-            echo "android.useAndroidX=true" >> $GRADLE_PROPS
+
+          # Fix Kotlin Duplicate Class Conflicts in build.gradle
+          BUILD_GRADLE="android/build.gradle"
+          if [ -f "$BUILD_GRADLE" ]; then
+            echo 'subprojects { configurations.all { resolutionStrategy.eachDependency { details -> if (details.requested.group == "org.jetbrains.kotlin" && (details.requested.name == "kotlin-stdlib-jdk7" || details.requested.name == "kotlin-stdlib-jdk8")) { details.useTarget("org.jetbrains.kotlin:kotlin-stdlib:1.8.22") } } } }' >> $BUILD_GRADLE
           fi
 
       - name: Build Android APK

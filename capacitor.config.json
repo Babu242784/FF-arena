@@ -1,0 +1,6 @@
+{
+  "appId": "com.ffarena.app",
+  "appName": "FF Arena",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}

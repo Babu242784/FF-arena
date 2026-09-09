@@ -29,21 +29,45 @@ jobs:
           npx cap add android || true
           npx cap sync android
 
-      - name: Fix Kotlin Stdlib Duplicate Conflict
+      - name: Fix Kotlin Duplicate Classes Forcefully
         run: |
           cd android
-          echo "configurations.all { resolutionStrategy.eachDependency { if (requested.group == 'org.jetbrains.kotlin' && (requested.name == 'kotlin-stdlib-jdk7' || requested.name == 'kotlin-stdlib-jdk8')) { useTarget 'org.jetbrains.kotlin:kotlin-stdlib:1.8.22' } } }" >> build.gradle
+          echo "android.useAndroidX=true" >> gradle.properties
+          echo "android.enableJetifier=true" >> gradle.properties
+          
+          python3 -c "
+          with open('build.gradle', 'r') as f:
+              content = f.read()
+          
+          fix = '''
+          subprojects {
+              configurations.all {
+                  resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+                      def requested = details.requested
+                      if (requested.group == 'org.jetbrains.kotlin') {
+                          if (requested.name == 'kotlin-stdlib-jdk7' || requested.name == 'kotlin-stdlib-jdk8') {
+                              details.useTarget 'org.jetbrains.kotlin:kotlin-stdlib:1.8.22'
+                          }
+                      }
+                  }
+              }
+          }
+          '''
+          
+          with open('build.gradle', 'w') as f:
+              f.write(content + '\n' + fix)
+          "
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '21'
+          java-version: '17'
 
       - name: Build Android APK
         run: |
           cd android
-          ./gradlew assembleDebug --no-daemon -Pandroid.useAndroidX=true -Pandroid.enableJetifier=false
+          ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

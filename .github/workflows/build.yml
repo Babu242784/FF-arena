@@ -31,26 +31,33 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '21'
+          java-version: '17'
 
       - name: Add Android Platform
         run: |
           npx --yes @capacitor/cli add android || true
           npx --yes @capacitor/cli sync android
 
-      - name: Inject Android Permissions
+      - name: Inject Android Permissions & Fix Duplicate Kotlin
         run: |
           MANIFEST_PATH="android/app/src/main/AndroidManifest.xml"
           if [ -f "$MANIFEST_PATH" ]; then
             sed -i '/<application/i \    <uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />' $MANIFEST_PATH
             sed -i 's/<application/<application android:usesCleartextTraffic="true"/' $MANIFEST_PATH
           fi
+          
+          # Fix Kotlin Duplicate Classes
+          GRADLE_PROPS="android/gradle.properties"
+          if [ -f "$GRADLE_PROPS" ]; then
+            echo "android.enableJetifier=true" >> $GRADLE_PROPS
+            echo "android.useAndroidX=true" >> $GRADLE_PROPS
+          fi
 
       - name: Build Android APK
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4

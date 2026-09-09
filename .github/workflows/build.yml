@@ -33,12 +33,12 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '17'
+          java-version: '21'
 
       - name: Build Android APK
         run: |
           cd android
-          ./gradlew assembleDebug --no-daemon -Pandroid.useAndroidX=true
+          ./gradlew assembleDebug --no-daemon -Pandroid.useAndroidX=true -Pandroid.enableJetifier=true -Porg.gradle.jvmargs="-Xmx2048m"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

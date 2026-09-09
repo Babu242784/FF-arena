@@ -31,17 +31,22 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '17'
+          java-version: '21'
 
       - name: Add Android Platform
         run: |
           npx --yes @capacitor/cli add android || true
           npx --yes @capacitor/cli sync android
 
-      - name: Inject Android Permissions & Fix Duplicate Kotlin
+      - name: Inject Network Permissions & Fix Kotlin
         run: |
           MANIFEST_PATH="android/app/src/main/AndroidManifest.xml"
           if [ -f "$MANIFEST_PATH" ]; then
+            # Clean duplicate permissions if any
+            sed -i '/android.permission.INTERNET/d' $MANIFEST_PATH
+            sed -i '/android.permission.ACCESS_NETWORK_STATE/d' $MANIFEST_PATH
+            
+            # Inject permissions cleanly
             sed -i '/<application/i \    <uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />' $MANIFEST_PATH
             sed -i 's/<application/<application android:usesCleartextTraffic="true"/' $MANIFEST_PATH
           fi

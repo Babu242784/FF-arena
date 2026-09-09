@@ -2,14 +2,17 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ main, master ]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -17,66 +20,37 @@ jobs:
           node-version: 20
 
       - name: Install Dependencies
-        run: |
-          npm install
-          npm install @capacitor/core @capacitor/cli @capacitor/android
+        run: npm ci || npm install
 
       - name: Build Web Assets
         run: npm run build
 
-      - name: Add Android Platform & Sync
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '21'
+
+      - name: Add Android Platform
         run: |
           npx cap add android || true
           npx cap sync android
 
-      - name: Setup Java 21
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-
-      - name: Fix Kotlin and Build Target Compatibility
+      - name: Inject Android Permissions
         run: |
-          cd android
-          echo "android.useAndroidX=true" >> gradle.properties
-          echo "android.enableJetifier=false" >> gradle.properties
-          
-          python3 -c "
-          with open('build.gradle', 'r') as f:
-              content = f.read()
-          
-          fix = '''
-          subprojects {
-              afterEvaluate { project ->
-                  if (project.hasProperty('android')) {
-                      project.android {
-                          compileOptions {
-                              sourceCompatibility JavaVersion.VERSION_21
-                              targetCompatibility JavaVersion.VERSION_21
-                          }
-                      }
-                  }
-              }
-              configurations.all {
-                  resolutionStrategy.eachDependency { details ->
-                      if (details.requested.group == 'org.jetbrains.kotlin' && (details.requested.name == 'kotlin-stdlib-jdk7' || details.requested.name == 'kotlin-stdlib-jdk8')) {
-                          details.useTarget 'org.jetbrains.kotlin:kotlin-stdlib:1.8.22'
-                      }
-                  }
-              }
-          }
-          '''
-          
-          with open('build.gradle', 'w') as f:
-              f.write(content + '\n' + fix)
-          "
+          MANIFEST_PATH="android/app/src/main/AndroidManifest.xml"
+          if [ -f "$MANIFEST_PATH" ]; then
+            sed -i '/<application/i \    <uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />' $MANIFEST_PATH
+            sed -i 's/<application/<application android:usesCleartextTraffic="true"/' $MANIFEST_PATH
+          fi
 
       - name: Build Android APK
         run: |
           cd android
-          ./gradlew assembleDebug --no-daemon
+          chmod +x gradlew
+          ./gradlew assembleDebug
 
-      - name: Upload APK
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-debug

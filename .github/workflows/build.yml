@@ -29,6 +29,11 @@ jobs:
           npx cap add android || true
           npx cap sync android
 
+      - name: Fix Kotlin Stdlib Duplicate Conflict
+        run: |
+          cd android
+          echo "configurations.all { resolutionStrategy.eachDependency { if (requested.group == 'org.jetbrains.kotlin' && (requested.name == 'kotlin-stdlib-jdk7' || requested.name == 'kotlin-stdlib-jdk8')) { useTarget 'org.jetbrains.kotlin:kotlin-stdlib:1.8.22' } } }" >> build.gradle
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -38,7 +43,7 @@ jobs:
       - name: Build Android APK
         run: |
           cd android
-          ./gradlew assembleDebug --no-daemon -Pandroid.useAndroidX=true -Pandroid.enableJetifier=true -Porg.gradle.jvmargs="-Xmx2048m"
+          ./gradlew assembleDebug --no-daemon -Pandroid.useAndroidX=true -Pandroid.enableJetifier=false
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

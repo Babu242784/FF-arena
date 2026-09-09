@@ -29,11 +29,17 @@ jobs:
           npx cap add android || true
           npx cap sync android
 
-      - name: Fix Kotlin Duplicate Classes Forcefully
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Fix Kotlin and Build Target Compatibility
         run: |
           cd android
           echo "android.useAndroidX=true" >> gradle.properties
-          echo "android.enableJetifier=true" >> gradle.properties
+          echo "android.enableJetifier=false" >> gradle.properties
           
           python3 -c "
           with open('build.gradle', 'r') as f:
@@ -41,13 +47,20 @@ jobs:
           
           fix = '''
           subprojects {
-              configurations.all {
-                  resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-                      def requested = details.requested
-                      if (requested.group == 'org.jetbrains.kotlin') {
-                          if (requested.name == 'kotlin-stdlib-jdk7' || requested.name == 'kotlin-stdlib-jdk8') {
-                              details.useTarget 'org.jetbrains.kotlin:kotlin-stdlib:1.8.22'
+              afterEvaluate { project ->
+                  if (project.hasProperty('android')) {
+                      project.android {
+                          compileOptions {
+                              sourceCompatibility JavaVersion.VERSION_21
+                              targetCompatibility JavaVersion.VERSION_21
                           }
+                      }
+                  }
+              }
+              configurations.all {
+                  resolutionStrategy.eachDependency { details ->
+                      if (details.requested.group == 'org.jetbrains.kotlin' && (details.requested.name == 'kotlin-stdlib-jdk7' || details.requested.name == 'kotlin-stdlib-jdk8')) {
+                          details.useTarget 'org.jetbrains.kotlin:kotlin-stdlib:1.8.22'
                       }
                   }
               }
@@ -57,12 +70,6 @@ jobs:
           with open('build.gradle', 'w') as f:
               f.write(content + '\n' + fix)
           "
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '17'
 
       - name: Build Android APK
         run: |

@@ -8,5 +8,8 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: false
+  },
+  global: {
+    headers: { 'x-my-custom-header': 'ff-arena' }
   }
 })

@@ -377,4 +377,60 @@ export default function App() {
                     </span>
                   </div>
                 </div>
-            
+                              </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
+        {activeTab === 'wallet' && (
+          <div className="space-y-4">
+            <div className="bg-neutral-900 p-5 rounded-xl border border-amber-500/30 text-center space-y-2 shadow-xl">
+              <p className="text-[11px] text-neutral-400 uppercase font-extrabold tracking-wider">Available Balance</p>
+              <p className="text-3xl font-black text-amber-400">₹{profile?.wallet_balance || '0.00'}</p>
+              <button className="w-full mt-2 py-2 bg-amber-500 hover:bg-amber-400 text-black font-extrabold rounded-lg text-xs uppercase tracking-wider transition">
+                Withdraw Request
+              </button>
+            </div>
+
+            <h3 className="text-[11px] font-black text-neutral-400 uppercase tracking-wider pt-2">Transaction Ledger</h3>
+            <div className="space-y-2">
+              {walletTxns.length === 0 ? (
+                <p className="text-xs text-neutral-500 text-center py-4">Koi transactions nahi hain.</p>
+              ) : (
+                walletTxns.map(txn => (
+                  <div key={txn.id} className="bg-neutral-900 border border-neutral-800 p-3 rounded-lg flex justify-between items-center text-xs">
+                    <div>
+                      <p className="font-bold text-neutral-200">{txn.description}</p>
+                      <p className="text-[10px] text-neutral-500">{new Date(txn.created_at).toLocaleString()}</p>
+                    </div>
+                    <span className={`font-mono font-bold ${txn.amount > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                      {txn.amount > 0 ? `+₹${txn.amount}` : `-₹${Math.abs(txn.amount)}`}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+      </main>
+
+      <nav className="fixed bottom-0 left-0 right-0 bg-neutral-900/95 backdrop-blur border-t border-neutral-800 py-2 px-6 flex justify-around items-center z-40">
+        <button onClick={() => setActiveTab('tournaments')} className={`flex flex-col items-center gap-1 ${activeTab === 'tournaments' ? 'text-amber-500' : 'text-neutral-500'}`}>
+          <span className="text-base">🏆</span>
+          <span className="text-[10px] font-bold">Matches</span>
+        </button>
+        <button onClick={() => setActiveTab('history')} className={`flex flex-col items-center gap-1 ${activeTab === 'history' ? 'text-amber-500' : 'text-neutral-500'}`}>
+          <span className="text-base">🎖️</span>
+          <span className="text-[10px] font-bold">History</span>
+        </button>
+        <button onClick={() => setActiveTab('wallet')} className={`flex flex-col items-center gap-1 ${activeTab === 'wallet' ? 'text-amber-500' : 'text-neutral-500'}`}>
+          <span className="text-base">👛</span>
+          <span className="text-[10px] font-bold">Wallet</span>
+        </button>
+      </nav>
+    </div>
+  );
+                                                                          }
+

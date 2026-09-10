@@ -377,8 +377,6 @@ export default function App() {
                     </span>
                   </div>
                 </div>
-                              </div>
-                </div>
               ))
             )}
           </div>
@@ -432,5 +430,5 @@ export default function App() {
       </nav>
     </div>
   );
-                                                                          }
-
+            }
+              

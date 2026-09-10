@@ -112,11 +112,10 @@ export default function App() {
     );
   }
 
-  // --- 1. LANDING PAGE VIEW (UNAUTHENTICATED) ---
+  // --- LANDING PAGE (UNAUTHENTICATED) ---
   if (!session) {
     return (
       <div className="min-h-screen bg-neutral-950 text-white font-sans selection:bg-amber-500 selection:text-black">
-        {/* Navigation Bar */}
         <nav className="flex items-center justify-between px-6 py-4 border-b border-neutral-800/80 bg-neutral-900/80 backdrop-blur sticky top-0 z-40">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-amber-500 rounded flex items-center justify-center font-black text-black text-xl shadow-lg shadow-amber-500/20">FF</div>
@@ -135,7 +134,6 @@ export default function App() {
           </div>
         </nav>
 
-        {/* Hero Banner Section */}
         <section className="relative px-6 py-16 max-w-5xl mx-auto text-center flex flex-col items-center">
           <h1 className="text-5xl md:text-7xl font-black italic tracking-tighter text-amber-500 leading-none mb-2">
             ENTER THE <br/><span className="text-white">ARENA</span>
@@ -147,7 +145,6 @@ export default function App() {
           </div>
         </section>
 
-        {/* Upcoming Tournaments Preview */}
         <section className="max-w-5xl mx-auto px-6 py-8 border-t border-neutral-800/80">
           <h2 className="text-amber-500 font-black mb-4 tracking-wider text-xs uppercase">| UPCOMING TOURNAMENTS</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -171,7 +168,6 @@ export default function App() {
           </div>
         </section>
 
-        {/* AUTH MODAL OVERLAY */}
         {showAuthModal && (
           <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
             <div className="w-full max-w-sm bg-neutral-900 border border-neutral-800 rounded-2xl p-6 shadow-2xl relative">
@@ -254,10 +250,9 @@ export default function App() {
     );
   }
 
-  // --- 2. AUTHENTICATED DASHBOARD VIEW ---
+  // --- DASHBOARD (AUTHENTICATED) ---
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100 font-sans pb-24">
-      {/* Header */}
       <header className="sticky top-0 z-40 bg-neutral-900/90 backdrop-blur border-b border-neutral-800 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-amber-500 flex items-center justify-center text-black font-black text-xl shadow-md shadow-amber-500/20">
@@ -279,7 +274,6 @@ export default function App() {
         </div>
       </header>
 
-      {/* Main Container */}
       <main className="p-4 max-w-lg mx-auto space-y-4">
         {activeTab === 'tournaments' && (
           <div className="space-y-4">
@@ -378,4 +372,9 @@ export default function App() {
                     <p className="text-[10px] text-neutral-500 font-mono mt-0.5">{new Date(reg.registered_at).toLocaleDateString()}</p>
                   </div>
                   <div className="text-right">
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${reg.status === 'approved' ? 'bg-emerald-500/10
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${reg.status === 'approved' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-neutral-800 text-neutral-400'}`}>
+                      {reg.status}
+                    </span>
+                  </div>
+                </div>
+            
